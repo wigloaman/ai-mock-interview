@@ -14,6 +14,7 @@ A Django web app for practising job interviews with an AI interviewer.
 ## Tech stack
 
 - Python, Django 5.2
+- PostgreSQL (Supabase)
 
 ## Getting started
 
@@ -23,9 +24,14 @@ cd ai-mock-interview
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
+cp env-sample.sh env.sh   # then fill in your values
+source env.sh
+python manage.py migrate
+python manage.py runserver
 ```
 
-More setup steps will be added as the project grows.
+The app uses a Supabase Postgres database when `DATABASE_URL` is set, and local SQLite otherwise.
 
 ## Credits
 
