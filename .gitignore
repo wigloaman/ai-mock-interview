@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Secrets
+.env
+env.sh
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Videos (kept out of the repo)
+*.mp4
+*.mov
+*.webm
