@@ -1,0 +1,58 @@
+{% extends "interview/base.html" %}
+{% load static %}
+
+{% block title %}Contact Us | AI Mock Interview{% endblock %}
+
+{% block content %}
+
+<section class="contact_section layout_padding">
+  <div class="container ">
+    <div class="heading_container">
+      <h2>
+        Contact Us
+      </h2>
+      <img src="{% static 'interview/images/contact_logo.png' %}" alt="Contact Us">
+    </div>
+  </div>
+  <div class="container">
+    {% if not complete %}
+    <div class="row">
+      <div class="col-md-6">
+        <form method="post" action="{% url 'interview:contact' %}">
+          {% csrf_token %}
+          <div>
+            {{ form.name.label_tag }} <span style="color:red">*</span> {{ form.name.errors }}
+            {{ form.name }}
+          </div>
+          <div>
+            {{ form.email.label_tag }} <span style="color:red">*</span> {{ form.email.errors }}
+            {{ form.email }}
+          </div>
+          <div>
+            {{ form.contact_no.label_tag }} {{ form.contact_no.errors }}
+            {{ form.contact_no }}
+          </div>
+          <div>
+            {{ form.message.label_tag }} <span style="color:red">*</span> {{ form.message.errors }}
+            {{ form.message }}
+          </div>
+          <div class="d-flex">
+            <button type="submit">SEND</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-6 right-flex">
+        <div class="map-responsive sticky-content">
+            <img src="{% static 'interview/images/contact.gif' %}" alt="Contact Us">
+          </div>
+      </div>
+    </div>
+    {% else %}
+    <div style="padding-top:30px;font-size:18px;">
+      Your response has been submitted. We will get back to you soon.
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

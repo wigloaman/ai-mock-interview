@@ -47,3 +47,15 @@ class UserInterviewForm(forms.ModelForm):
     def clean_text(self, text):
         # Remove curly brackets, double quotes, and single quotes
         return text.replace('{', '').replace('}', '').replace('"', '').replace("'", '')
+
+
+class ContactUsForm(forms.ModelForm):
+    class Meta:
+        model = models.ContactUs
+        fields = ('name', 'email', 'contact_no', 'message')
+        labels = {
+            'name': 'Name',
+            'email': 'Email',
+            'contact_no': 'Phone Number (Include your country code)',
+            'message': 'Message',
+        }

@@ -122,3 +122,12 @@ class UserQuestionAnswer(models.Model):
     improvements = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class ContactUs(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    contact_no = models.CharField(max_length=25, null=True, blank=True)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

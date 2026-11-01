@@ -58,7 +58,7 @@
                                 <a class="nav-link" href="{% url 'interview:create_interview_session' %}">Start Interview</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Contact Us</a>
+                                <a class="nav-link" href="{% url 'interview:contact' %}">Contact Us</a>
                             </li>
                             {% if user.is_authenticated %}
                             <li class="nav-item nav-small-visible">
