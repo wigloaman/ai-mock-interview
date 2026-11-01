@@ -46,6 +46,14 @@
                                 {{ form.job_description }}
                     </div>
 
+                    {% if form.auto_answer %}
+                    <div class="custom-field">
+                        <label for="id_auto_answer" class="field-label">
+                            {{ form.auto_answer }} Auto-answer with AI <span class="optional-text">(staff testing only)</span>
+                        </label>
+                    </div>
+                    {% endif %}
+
                     <button type="submit">Start Interview</button>
                 </form>
             </div>

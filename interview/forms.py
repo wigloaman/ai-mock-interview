@@ -22,7 +22,7 @@ class SignupForm(forms.Form):
 class UserInterviewForm(forms.ModelForm):
     class Meta:
         model = models.UserInterview
-        fields = ('job_role', 'job_description', 'company')
+        fields = ('job_role', 'job_description', 'company', 'auto_answer')
 
     def clean(self):
         cleaned_data = super().clean()

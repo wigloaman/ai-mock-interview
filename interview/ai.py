@@ -254,3 +254,18 @@ def generate_cross_questions(interview, conversation, number_of_cross_questions,
         return []
     questions = [q.strip() for q in data.get("questions", []) if isinstance(q, str) and q.strip()]
     return questions[:number_of_cross_questions]
+
+
+def generate_answer(job_role, question):
+    """Return an average candidate's answer, used to auto-answer interviews when testing."""
+    response = get_client().chat.completions.create(
+        model=settings.AI_FAST_MODEL,
+        temperature=0.2,
+        messages=[
+            {"role": "system", "content": f"You are an candidate giving an interview for the role of {job_role}.\
+ You are neither too good nor too bad. You are an average candidate. Given the question asked by the\
+ interviewer, generate an average answer which should neither be good nor bad. Reply with the answer only."},
+            {"role": "user", "content": f"Question: {question}\nAverage answer:"},
+        ],
+    )
+    return (response.choices[0].message.content or "").strip()

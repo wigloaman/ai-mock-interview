@@ -11,6 +11,7 @@ urlpatterns = [
     path('start-interview/', views.start_interview, name='start_interview'),
     path('get_question/', views.get_question, name='get_question'),
     path('save-answer/', views.save_answer, name='save_answer'),
+    path('get-answer-automatically/', views.get_answer_automatically, name='get_answer_automatically'),
     path('end-interview/', views.end_interview, name='end_interview'),
     path('display-interview-result/', views.display_result, name='display_result'),
     path('check-review-status/', views.check_review_status, name='check_review_status'),

@@ -63,10 +63,17 @@ def get_current_interview(request):
                                                user=request.user).first()
 
 
+def interview_form(request, data=None):
+    form = UserInterviewForm(data)
+    if not request.user.is_staff:
+        del form.fields['auto_answer']  # Auto-answer is a testing tool for staff only
+    return form
+
+
 @login_required
 def create_interview_session(request):
     if request.method == 'POST':
-        form = UserInterviewForm(request.POST)
+        form = interview_form(request, request.POST)
         if form.is_valid():
             interview = form.save(commit=False)
             interview.user = request.user
@@ -76,7 +83,7 @@ def create_interview_session(request):
         return JsonResponse({'status': 'error', 'errors': form.errors})
 
     context = {
-        'form': UserInterviewForm(),
+        'form': interview_form(request),
         'interview': None
     }
     interview = models.UserInterview.objects.filter(user=request.user).last()
@@ -171,6 +178,22 @@ def add_cross_questions(interview, question):
     for i, cross_question in enumerate(cross_questions, start=1):
         models.UserQuestionAnswer.objects.create(question=cross_question, user=interview.user,
                                                  session=interview, pos=float(pos + step * i))
+
+
+@login_required
+def get_answer_automatically(request):
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'error': 'Invalid request'}, status=403)
+    interview = get_current_interview(request)
+    question = interview and interview.userquestionanswer_set.filter(id=request.session.get('question_id')).first()
+    if question is None:
+        return JsonResponse({'success': False, 'error': 'Invalid interview'})
+    try:
+        answer_text = ai.generate_answer(interview.job_role, question.question)
+    except Exception as e:
+        print(f"[ERROR] Error generating answer automatically: {e}")
+        return JsonResponse({'success': False, 'error': 'Answer generation failed'})
+    return JsonResponse({'success': True, 'answer': answer_text})
 
 
 def result_url(interview):
