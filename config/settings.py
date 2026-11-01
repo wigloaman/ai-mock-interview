@@ -119,3 +119,9 @@ ACCOUNT_SIGNUP_FORM_CLASS = 'interview.forms.SignupForm'
 
 # Print emails (e.g. password reset) to the console during development
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# AI provider (Groq, OpenAI-compatible API)
+AI_API_KEY = os.environ.get('GROQ_API_KEY', '')
+AI_BASE_URL = os.environ.get('AI_BASE_URL', 'https://api.groq.com/openai/v1')
+AI_MODEL = os.environ.get('AI_MODEL', 'openai/gpt-oss-120b')
+AI_FAST_MODEL = os.environ.get('AI_FAST_MODEL', 'openai/gpt-oss-20b')

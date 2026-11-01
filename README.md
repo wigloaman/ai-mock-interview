@@ -17,6 +17,7 @@ A Django web app for practising job interviews with an AI interviewer.
 - PostgreSQL (Supabase)
 - Bootstrap, jQuery
 - django-allauth for authentication
+- Groq API (gpt-oss models) for AI questions and reviews
 
 ## Getting started
 
