@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .forms import ContactUsForm, UserProfileForm, UserInterviewForm
+from .forms import ContactUsForm, FeedbackForm, UserProfileForm, UserInterviewForm
 from interview import ai, models, review, voice
 
 NUMBER_OF_QUESTIONS = {
@@ -50,6 +50,24 @@ def contact(request):
         context = {"form": form,
                    "complete": False}
     return render(request, 'interview/contact.html', context)
+
+
+def feedback(request):
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            form.save()
+            context = {"complete": True}
+        else:
+            context = {"form": form,
+                       "complete": False}
+    else:
+        form = FeedbackForm()
+        if request.user.is_authenticated:
+            form.fields['email'].initial = request.user.email
+        context = {"form": form,
+                   "complete": False}
+    return render(request, 'interview/feedback.html', context)
 
 
 @login_required

@@ -65,7 +65,7 @@
                                 <a class="nav-link" href="{% url 'interview:view_profile' %}">View Profile</a>
                             </li>
                             <li class="nav-item nav-small-visible">
-                                <a class="nav-link" href="#">Feedback</a>
+                                <a class="nav-link" href="{% url 'interview:feedback' %}">Feedback</a>
                             </li>
                             <li class="nav-item nav-small-visible">
                                 <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
@@ -80,7 +80,7 @@
                                             <img src="{% static 'interview/images/profile.png' %}" alt="View Profile">
                                             <p>View Profile</p>
                                         </a>
-                                        <a href="#" class="sub-menu-link sub-menu-link-first">
+                                        <a href="{% url 'interview:feedback' %}" class="sub-menu-link sub-menu-link-first">
                                             <img src="{% static 'interview/images/feedback-icon.png' %}" alt="Feedback">
                                             <p>Feedback</p>
                                         </a>

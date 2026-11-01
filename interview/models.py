@@ -131,3 +131,23 @@ class ContactUs(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Feedback(models.Model):
+    EMOJI_CHOICES = [
+        ('1', 'Very Poor'),
+        ('2', 'Poor'),
+        ('3', 'Good'),
+        ('4', 'Very Good'),
+        ('5', 'Excellent'),
+    ]
+
+    question_rating = models.CharField(max_length=1, choices=EMOJI_CHOICES)
+    helpfulness_rating = models.CharField(max_length=1, choices=EMOJI_CHOICES)
+    interface_rating = models.CharField(max_length=1, choices=EMOJI_CHOICES)
+    reviewer_rating = models.CharField(max_length=1, choices=EMOJI_CHOICES)
+    website_rating = models.CharField(max_length=1, choices=EMOJI_CHOICES)
+    improvements = models.TextField(blank=True)
+    email = models.EmailField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

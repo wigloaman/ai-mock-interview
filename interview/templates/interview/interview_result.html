@@ -88,6 +88,13 @@
       <div class="text-center" style="font-size: 18px;">You did not answer any question.</div>
     {% endif %}
   </div>
+  <div class="questions-section">
+    <h2 class="interview-heading">Feedback</h2>
+    <div class="feedback-section">
+      <p>We value your feedback! Please let us know about your experience:</p>
+      <p><a href="{% url 'interview:feedback' %}" class="feedback-link">Give Feedback</a></p>
+    </div>
+  </div>
 {% elif interview.is_complete and interview.error_present and not review_in_progress %}
   <div class="interview-result">
     <div class="overall-review">
