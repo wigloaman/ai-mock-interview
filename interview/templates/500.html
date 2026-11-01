@@ -1,0 +1,19 @@
+{% extends "interview/base.html" %}
+
+{% block content %}
+<section class="contact_section layout_padding">
+  <div class="container ">
+    <div class="heading_container">
+      <h2>
+        Something went wrong
+      </h2>
+    </div>
+  </div>
+  <div class="container">
+    <div class="display-message">
+      We're sorry, but something went wrong. Please reach out to us at <a href="{% url 'interview:contact' %}">Contact Us</a>.
+      </div>
+  </div>
+</section>
+
+{% endblock %}

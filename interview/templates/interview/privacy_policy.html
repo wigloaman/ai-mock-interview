@@ -1,0 +1,39 @@
+{% extends "interview/base.html" %}
+
+{% block title %}Privacy Policy | AI Mock Interview{% endblock %}
+
+{% block content %}
+<div class="layout_padding2">
+  <div class="container">
+    <h2>Privacy Policy</h2>
+    <p>Last updated: November 1, 2026</p>
+
+    <h4>What we store</h4>
+    <p>When you create an account we store your name, email address and password (stored as a secure hash, never
+      in plain text). If you fill in your profile we also store the details you add, such as your location, job
+      role, company and LinkedIn or GitHub links.</p>
+    <p>For each mock interview we store the job role, company and job description you enter, the questions asked,
+      your answers, and the AI-generated review. Messages sent through Contact Us and responses to the feedback
+      form are also stored.</p>
+
+    <h4>Services that process your data</h4>
+    <ul>
+      <li><strong>Groq</strong> generates interview questions, follow-up questions and reviews from your interview
+        details and answers, and converts recorded voice answers into text.</li>
+      <li><strong>Microsoft Edge text-to-speech</strong> converts interview questions into spoken audio. Only the
+        question text is sent.</li>
+      <li><strong>Supabase</strong> hosts the database where the information above is stored.</li>
+    </ul>
+    <p>Voice recordings are only used to produce the text of your answer and are not stored by this site. Camera
+      video, if you turn it on, stays in your browser and is never uploaded.</p>
+
+    <h4>How your data is used</h4>
+    <p>Your data is used only to run your mock interviews, show you your results and past interviews, and reply to
+      messages you send. It is not sold or shared for advertising.</p>
+
+    <h4>Your choices</h4>
+    <p>You can edit your profile at any time. To have your account and interview history deleted, send a request
+      through the <a href="{% url 'interview:contact' %}">Contact Us</a> page.</p>
+  </div>
+</div>
+{% endblock %}

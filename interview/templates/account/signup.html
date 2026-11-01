@@ -37,6 +37,11 @@
             {% if redirect_field_value %}
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
             {% endif %}
+            <p class="helptext">
+                By registering you agree to the
+                <a href="{% url 'interview:terms_of_use' %}" target="_blank">Terms of Use</a>
+                and <a href="{% url 'interview:privacy_policy' %}" target="_blank">Privacy Policy</a>.
+            </p>
             <button class="btn btn-primary form-label" type="submit">Register</button>
         </form>
         <p class="text-center">If you already have an account, <a href="{% url 'account_login' %}">login</a> instead.</p>

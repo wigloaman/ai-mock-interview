@@ -302,3 +302,11 @@ def transcribe_audio(request):
         print(f"[ERROR] Error transcribing audio: {e}")
         return JsonResponse({'success': False, 'error': 'Transcription failed'}, status=502)
     return JsonResponse({'success': True, 'text': text})
+
+
+def privacy_policy(request):
+    return render(request, 'interview/privacy_policy.html', {})
+
+
+def terms_of_use(request):
+    return render(request, 'interview/terms_of_use.html', {})
