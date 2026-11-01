@@ -18,6 +18,7 @@ A Django web app for practising job interviews with an AI interviewer.
 - Bootstrap, jQuery
 - django-allauth for authentication
 - Groq API (gpt-oss models) for AI questions and reviews
+- Groq Whisper for voice answers, edge-tts for spoken questions
 
 ## Getting started
 

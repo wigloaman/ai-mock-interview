@@ -1,23 +1,5 @@
 $(document).ready(function () {
 
-    // Check if device is IOS
-    function isIOS() {
-        var ua = navigator.userAgent;
-        // Checks for iPhone and iPod
-        var isIOSDevice = /iPad|iPhone|iPod/.test(ua);
-        // Special case for iPads with iPadOS 13 and later that use a desktop user agent
-        if (!isIOSDevice && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
-            isIOSDevice = true;
-        }
-        return isIOSDevice;
-    }
-
-    function isMobile() {
-        // Regular expression to detect common mobile device user agents
-        var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-        return mobileRegex.test(navigator.userAgent);
-    }
-
     // Function to add a message to the chat box
     function addMessage(message, incoming) {
         const messageClass = incoming ? "incoming" : "outgoing";
@@ -51,6 +33,7 @@ $(document).ready(function () {
                 if (data.question) {
                     addMessage(data.question, true);
                     chatBox.scrollTop = chatBox.scrollHeight;
+                    speakText(data.question);
                     sendButton.disabled = false;
                     if (data.auto_answer) {
                         getAutoAnswer();
@@ -221,68 +204,109 @@ $(document).ready(function () {
         }
     });
 
-    //Add voice input in interface
+    //Add voice input in interface: record the answer, then transcribe it on the server
 
-    let recognition;
+    let recognition; // Active MediaRecorder while recording
+    var micMessage = document.getElementById('mic-message');
 
-    // Function to start voice recognition
-    function startRecognition() {
-        recognition = new webkitSpeechRecognition(); // Create a new instance
-        recognition.lang = 'en-US'; // Set the language
-        recognition.onerror = function (event) {
-            if (isIOS()) {
-                alert("Microphone may not be fully supported on iOS devices. Please use your keyboard microphone instead.");
-            }
-            else {
-                if (isMobile()) {
-                    alert("Microphone may not be fully supported on your device. Please use your keyboard microphone instead.");
-                }
-                else {
-                    alert("Microphone may not be fully supported on your device.");
-                }
-            }
-        };
-        recognition.onresult = function (event) {
-
-            const transcript = event.results[0][0].transcript;
-            messageInput.value += transcript + ' '; // Append recognized text
-        };
-
-        recognition.onend = function () {
-            recognition.stop();
-            startRecognition(); // Restart recognition on end (continuous listening)
-        };
-
-        recognition.start(); // Start listening
+    function showMicMessage(text, hideAfterMs) {
+        micMessage.textContent = text;
+        micMessage.style.display = 'block';
+        if (hideAfterMs) {
+            setTimeout(function () {
+                micMessage.style.display = 'none';
+            }, hideAfterMs);
+        }
     }
 
-    // Toggle voice recognition on icon click
-    var micMessage = document.getElementById('mic-message');
+    function transcribeRecording(audioBlob) {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'answer.webm');
+        showMicMessage('Converting your answer to text...');
+        fetch('/transcribe-audio/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageInput.value += (messageInput.value ? ' ' : '') + data.text;
+                    messageInput.dispatchEvent(new Event('input'));
+                    showMicMessage('Done. Edit if needed, then press Send', 3000);
+                } else {
+                    showMicMessage('Could not understand the audio. Please try again', 3000);
+                }
+            })
+            .catch(() => showMicMessage('Could not convert audio. Please type your answer', 3000));
+    }
+
+    // Toggle recording on icon click
     voiceInputIcon.addEventListener('click', function () {
+        if (recognition) {
+            recognition.stop();
+            return;
+        }
+        if (!navigator.mediaDevices || !window.MediaRecorder) {
+            alert("Voice input is not supported in this browser. Please type your answer.");
+            return;
+        }
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then((stream) => {
-                if (!recognition) {
-                    voiceInputIcon.classList.remove('fa-microphone-slash');
-                    voiceInputIcon.classList.add('fa-microphone');
-                    micMessage.textContent = 'Mic Enabled. Start speaking';
-                    micMessage.style.display = 'block';
-                    startRecognition();
-                } else {
+                const chunks = [];
+                recognition = new MediaRecorder(stream);
+                recognition.ondataavailable = (event) => chunks.push(event.data);
+                recognition.onstop = () => {
+                    stream.getTracks().forEach(track => track.stop());
                     voiceInputIcon.classList.remove('fa-microphone');
                     voiceInputIcon.classList.add('fa-microphone-slash');
-                    micMessage.textContent = 'Mic Disabled';
-                    micMessage.style.display = 'block';
-                    recognition.stop();
+                    const audioBlob = new Blob(chunks, { type: recognition.mimeType });
                     recognition = undefined;
-                }
-                setTimeout(function () {
-                    micMessage.style.display = 'none';
-                }, 2000);
+                    transcribeRecording(audioBlob);
+                };
+                recognition.start();
+                voiceInputIcon.classList.remove('fa-microphone-slash');
+                voiceInputIcon.classList.add('fa-microphone');
+                showMicMessage('Recording... click the mic again to stop');
             })
-            .catch((error) => {
+            .catch(() => {
                 alert("Microphone permission is not granted. Please grant it to start speaking.");
             });
     });
+
+    // Speak the question with the server's neural voice, falling back to the browser's voice
+    let currentlyPlayingAudio = null;
+    function speakText(text) {
+        if (currentlyPlayingAudio) {
+            currentlyPlayingAudio.pause();
+            currentlyPlayingAudio = null;
+        }
+        window.speechSynthesis && window.speechSynthesis.cancel();
+        const personBox = document.querySelector('.person-name');
+
+        fetch('/speak-text/?text=' + encodeURIComponent(text))
+            .then(response => {
+                if (!response.ok) throw new Error('Speech synthesis failed');
+                return response.blob();
+            })
+            .then(blob => {
+                const audio = new Audio(URL.createObjectURL(blob));
+                currentlyPlayingAudio = audio;
+                audio.addEventListener('play', () => personBox.classList.add('speaking'));
+                audio.addEventListener('ended', () => personBox.classList.remove('speaking'));
+                return audio.play();
+            })
+            .catch(() => speakWithBrowser(text, personBox));
+    }
+
+    function speakWithBrowser(text, personBox) {
+        if (!window.speechSynthesis) return;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.onstart = () => personBox.classList.add('speaking');
+        utterance.onend = () => personBox.classList.remove('speaking');
+        window.speechSynthesis.speak(utterance);
+    }
 
     // Expand textarea on smaller screens
     if (window.matchMedia("(max-width: 768px)").matches) {

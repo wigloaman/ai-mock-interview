@@ -1,12 +1,12 @@
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 
 from .forms import UserProfileForm, UserInterviewForm
-from interview import ai, models
+from interview import ai, models, voice
 
 NUMBER_OF_QUESTIONS = {
     timedelta(minutes=30): 15,
@@ -141,3 +141,30 @@ def end_interview(request):
         interview.is_complete = True
         interview.save()
     return redirect('interview:view_profile')
+
+
+@login_required
+def speak_text(request):
+    text = request.GET.get('text', '').strip()
+    if not text:
+        return JsonResponse({'error': 'Text is missing'}, status=400)
+    try:
+        audio = voice.synthesize_speech(text)
+    except Exception as e:
+        print(f"[ERROR] Error synthesizing speech: {e}")
+        return JsonResponse({'error': 'Speech synthesis failed'}, status=502)
+    return HttpResponse(audio, content_type='audio/mpeg')
+
+
+@login_required
+@require_POST
+def transcribe_audio(request):
+    audio_file = request.FILES.get('audio')
+    if not audio_file:
+        return JsonResponse({'success': False, 'error': 'Audio is missing'}, status=400)
+    try:
+        text = voice.transcribe_audio(audio_file)
+    except Exception as e:
+        print(f"[ERROR] Error transcribing audio: {e}")
+        return JsonResponse({'success': False, 'error': 'Transcription failed'}, status=502)
+    return JsonResponse({'success': True, 'text': text})

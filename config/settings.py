@@ -125,3 +125,7 @@ AI_API_KEY = os.environ.get('GROQ_API_KEY', '')
 AI_BASE_URL = os.environ.get('AI_BASE_URL', 'https://api.groq.com/openai/v1')
 AI_MODEL = os.environ.get('AI_MODEL', 'openai/gpt-oss-120b')
 AI_FAST_MODEL = os.environ.get('AI_FAST_MODEL', 'openai/gpt-oss-20b')
+
+# Voice: text to speech with edge-tts (free neural voices), speech to text with Groq Whisper
+TTS_VOICE = os.environ.get('TTS_VOICE', 'en-US-AvaNeural')
+STT_MODEL = os.environ.get('STT_MODEL', 'whisper-large-v3-turbo')
