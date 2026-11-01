@@ -96,5 +96,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Treat URLs entered without a scheme as https (Django 6.0 default)
 FORMS_URLFIELD_ASSUME_HTTPS = True
 
+# Temporary: use the admin login page until account pages are added
+LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

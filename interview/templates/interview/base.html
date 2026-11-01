@@ -61,7 +61,7 @@
                                 <a class="nav-link" href="#">Contact Us</a>
                             </li>
                             <li class="nav-item nav-small-visible">
-                                <a class="nav-link" href="#">View Profile</a>
+                                <a class="nav-link" href="{% url 'interview:view_profile' %}">View Profile</a>
                             </li>
                             <li class="nav-item nav-small-visible">
                                 <a class="nav-link" href="#">Feedback</a>
@@ -72,7 +72,7 @@
                                 <span class="nav-dropdown-symbol"></span>
                                 <div class="sub-menu-wrap" id="subMenu">
                                     <div class="sub-menu">
-                                        <a href="#" class="sub-menu-link sub-menu-link-first">
+                                        <a href="{% url 'interview:view_profile' %}" class="sub-menu-link sub-menu-link-first">
                                             <img src="{% static 'interview/images/profile.png' %}" alt="View Profile">
                                             <p>View Profile</p>
                                         </a>
