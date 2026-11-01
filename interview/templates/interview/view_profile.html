@@ -94,6 +94,35 @@
           </div>
         </div>
 
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-9 text-secondary">
+                <h4>Past Interviews</h4>
+              </div>
+            </div>
+            <hr>
+            <!-- Interview Tiles -->
+            <div class="row interview-display-area">
+              {% for interview in interviews %}
+              <div class="col-md-4 mb-3 interview-card">
+                <div class="card">
+                  <div class="card-body">
+                    <a href="{% url 'interview:display_result' %}?interview={{ interview.id }}">
+                      <h6 class="display-job-role">{{ interview.job_role }}</h6>
+                      <p class="mb-0 display-job-date">{{ interview.created_at|date:"Y-m-d" }}</p>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+            <p class="col-12 text-secondary">No interviews yet. <a href="{% url 'interview:create_interview_session' %}">Start your first one</a>.</p>
+            {% endfor %}
+            </div>
+            <!-- End Interview Tiles -->
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

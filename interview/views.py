@@ -3,10 +3,11 @@ from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from .forms import UserProfileForm, UserInterviewForm
-from interview import ai, models, voice
+from interview import ai, models, review, voice
 
 NUMBER_OF_QUESTIONS = {
     timedelta(minutes=30): 15,
@@ -25,7 +26,9 @@ def index(request):
 @login_required
 def view_profile(request):
     userprofile, _ = models.UserProfile.objects.get_or_create(user=request.user)
+    interviews = models.UserInterview.objects.filter(user=request.user, is_complete=True).order_by('-created_at')
     context = {"user": request.user,
+               "interviews": interviews,
                "userprofile": userprofile
                }
     return render(request, 'interview/view_profile.html', context)
@@ -79,7 +82,7 @@ def start_interview(request):
     if interview is None:
         return redirect('interview:create_interview_session')
     if interview.is_complete:
-        return redirect('interview:view_profile')
+        return redirect(result_url(interview))
 
     # Generate questions the first time the interview is opened
     if not interview.userquestionanswer_set.exists():
@@ -134,13 +137,48 @@ def save_answer(request):
     return JsonResponse({'success': True})
 
 
+def result_url(interview):
+    return reverse('interview:display_result') + f'?interview={interview.id}'
+
+
 @login_required
 def end_interview(request):
-    interview = get_current_interview(request)
-    if interview and not interview.is_complete:
-        interview.is_complete = True
-        interview.save()
-    return redirect('interview:view_profile')
+    # An unfinished interview from the profile is passed explicitly; otherwise use the current one
+    interview_id = request.GET.get('interview')
+    if interview_id:
+        interview = models.UserInterview.objects.filter(id=interview_id, user=request.user).first()
+    else:
+        interview = get_current_interview(request)
+    if interview is None:
+        return render(request, 'interview/message/invalid_interview.html', {})
+    review.complete_interview(interview)
+    return redirect(result_url(interview))
+
+
+@login_required
+def display_result(request):
+    interview = models.UserInterview.objects.filter(id=request.GET.get('interview'), user=request.user).first()
+    if interview is None:
+        return render(request, 'interview/message/invalid_interview.html', {})
+    questions = interview.userquestionanswer_set.filter(is_asked=True).order_by('pos')
+    context = {
+        'interview': interview,
+        'questions': questions,
+        'num_questions': len(questions),
+        'review_in_progress': review.is_in_progress(interview.id),
+    }
+    return render(request, 'interview/interview_result.html', context)
+
+
+@login_required
+def check_review_status(request):
+    interview = models.UserInterview.objects.filter(id=request.GET.get('interview_id'), user=request.user).first()
+    if interview is None:
+        return JsonResponse({'error': 'Invalid interview'}, status=404)
+    return JsonResponse({
+        'review_generated': interview.review_generated,
+        'error': interview.error_present and not review.is_in_progress(interview.id),
+    })
 
 
 @login_required

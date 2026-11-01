@@ -1,0 +1,132 @@
+{% extends "interview/base.html" %}
+
+{% block title %}{{ interview.job_role }} Result | AI Mock Interview{% endblock %}
+
+{% block content %}
+{% if interview.is_complete and interview.review_generated %}
+  <div class="interview-result">
+    <div class="overall-review">
+      <h2 class="interview-heading">{{ interview.job_role }}</h2>
+      <div class="review-items">
+        <h2>Score</h2>
+        <p>{{ interview.score }}/10</p>
+      </div>
+      {% if interview.company %}
+        <div class="review-items">
+          <h2>Company</h2>
+          <p>{{ interview.company }}</p>
+        </div>
+      {% endif %}
+      {% if interview.job_description %}
+        <div class="review-items">
+          <h2>Job Description</h2>
+          <p>{{ interview.job_description }}</p>
+        </div>
+      {% endif %}
+      <div class="review-items">
+        <h2>Review</h2>
+        <p>{{ interview.review|linebreaksbr }}</p>
+      </div>
+      <div class="review-items">
+        <h2>Strong Points</h2>
+        <p>{{ interview.strong_points|linebreaksbr }}</p>
+      </div>
+      <div class="review-items">
+        <h2>Weak Points</h2>
+        <p>{{ interview.weak_points|linebreaksbr }}</p>
+      </div>
+      <div class="review-items">
+        <h2>Improvements</h2>
+        <p>{{ interview.improvements|linebreaksbr }}</p>
+      </div>
+      <div class="review-items">
+        <h2>Is {{ interview.user.first_name|default:"the candidate" }} selected?</h2>
+        <p>{% if interview.is_selected %}Yes!{% else %}Unfortunately not!{% endif %}</p>
+      </div>
+      <div class="review-items">
+        <h2>{% if interview.is_selected %}Reason for Selection{% else %}Reason for Rejection{% endif %}</h2>
+        <p>{{ interview.reason_selection|linebreaksbr }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="questions-section">
+    <h2 class="interview-heading">Answer Review</h2>
+    {% if questions %}
+      {% for question in questions %}
+      <div class="question-item">
+        <div class="question-header">
+          <h2 class="question-title">{{ question.question }}</h2>
+          <span class="dropdown-symbol">▼</span>
+        </div>
+        <div class="question-details hidden">
+          <!-- Details initially hidden -->
+          <div class="review-items">
+            <h2>Your Answer</h2>
+            <p>{{ question.answer }}</p>
+          </div>
+          <div class="review-items">
+            <h2>Score</h2>
+            <p>{{ question.score }}/10</p>
+          </div>
+          <div class="review-items">
+            <h2>Review</h2>
+            <p>{{ question.review|linebreaksbr }}</p>
+          </div>
+          <div class="review-items">
+            <h2>Improvements</h2>
+            <p>{{ question.improvements|linebreaksbr }}</p>
+          </div>
+          <div class="review-items">
+            <h2>Expert Answer</h2>
+            <p>{{ question.perfect_answer|linebreaksbr }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center" style="font-size: 18px;">You did not answer any question.</div>
+    {% endif %}
+  </div>
+{% elif interview.is_complete and interview.error_present and not review_in_progress %}
+  <div class="interview-result">
+    <div class="overall-review">
+      <h2 class="interview-heading">{{ interview.job_role }}</h2>
+      <h4 class="interview-heading">We could not generate your review this time.</h4>
+      <h4 class="interview-heading"><a href="{% url 'interview:end_interview' %}?interview={{ interview.id }}">Try again</a></h4>
+    </div>
+  </div>
+{% elif interview.is_complete %}
+  <div class="processing-overlay" id="processingOverlay">
+    <div class="processing-content">
+      <div class="processing-symbol"></div>
+      <p class="processing-text">Your interview review is being generated. This usually takes under a minute.</p>
+      <p class="processing-text">This page will update automatically.</p>
+    </div>
+  </div>
+  <script>
+    function checkReviewGenerated() {
+      fetch('{% url "interview:check_review_status" %}?interview_id={{ interview.id }}')
+        .then(response => response.json())
+        .then(data => {
+          if (data.review_generated || data.error) {
+            window.location.reload();
+          } else {
+            setTimeout(checkReviewGenerated, 3000);
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    checkReviewGenerated();
+  </script>
+{% else %}
+  <div class="interview-result">
+    <div class="overall-review">
+      <h2 class="interview-heading">{{ interview.job_role }}</h2>
+      <h4 class="interview-heading">Interview was not completed.</h4>
+      <h4 class="interview-heading"><a href="{% url 'interview:end_interview' %}?interview={{ interview.id }}">Generate Review?</a></h4>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

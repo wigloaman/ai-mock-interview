@@ -12,6 +12,8 @@ urlpatterns = [
     path('get_question/', views.get_question, name='get_question'),
     path('save-answer/', views.save_answer, name='save_answer'),
     path('end-interview/', views.end_interview, name='end_interview'),
+    path('display-interview-result/', views.display_result, name='display_result'),
+    path('check-review-status/', views.check_review_status, name='check_review_status'),
     path('speak-text/', views.speak_text, name='speak_text'),
     path('transcribe-audio/', views.transcribe_audio, name='transcribe_audio'),
 ]

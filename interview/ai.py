@@ -124,3 +124,84 @@ def generate_questions(interview, number_of_questions):
 
     questions = [q.strip() for q in data.get("questions", []) if isinstance(q, str) and q.strip()]
     return questions[:number_of_questions] or None
+
+
+def to_score(value):
+    """Clamp an AI-provided score to an integer from 0 to 10."""
+    try:
+        return max(0, min(10, int(round(float(value)))))
+    except (TypeError, ValueError):
+        return 0
+
+
+def to_text(value):
+    """Flatten an AI-provided value (sometimes a list) into display text."""
+    if isinstance(value, list):
+        return "\n".join(f"- {item}" for item in value)
+    return str(value or "").strip()
+
+
+def interview_review_prompt(interview):
+    template = interviewer_intro(interview)
+    template += "You are given all the questions asked during the interview and candidate's answer to it.\
+ Your task is to do a detailed analysis of the candidate on the basis of it. Generate a detailed\
+ review of the candidate including where they were good and where they were bad. Also, generate score of the candidate ranging\
+ from 0 to 10 where higher the score means better the candidate. Also generate, strong and weak\
+ points/domains/fields of the candidate in a detailed and formatted manner.\
+ You also need to generate all improvements including\
+ minute details that can to be done to make the candidate a better fit. Also tell if you will select\
+ the candidate or not with the detailed reason of why if selected and why not if not selected.\
+ The output will be provided to the candidate, so use direct speech as you are\
+ advising the candidate. So, use 'you' to refer to the candidate.\n"
+    template += '\nRespond only with a JSON object with these keys: "score" (integer 0-10), "review" (string),\
+ "strong_points" (string), "weak_points" (string), "improvements" (string), "is_selected" (boolean),\
+ "reason_selection" (string).'
+    return template
+
+
+def answer_review_prompt(interview):
+    template = interviewer_intro(interview)
+    template += "You are given a question and the candidate's answer.\
+ Your task is to do a detailed analysis of the answer. You need to generate\
+ score of the answer in a range of 0 to 10 denoting how good the candidate's answer is, where\
+ higher score denotes better answer. You also need to generate a detailed review of the answer\
+ highlighting overall quality of the answer including where it was good and where it was bad.\
+ You also need to generate all improvements\
+ including minute details that need to be done to make candidate's answer better.\
+ Also generate a perfect answer of the question.\
+ Note that the output will be provided to the candidate, so use direct speech as you are\
+ advising the candidate. So, use 'you' to refer to the candidate.\n"
+    template += '\nRespond only with a JSON object with these keys: "score" (integer 0-10), "review" (string),\
+ "improvements" (string), "perfect_answer" (string).'
+    return template
+
+
+def generate_review(interview, questions):
+    """Fill in the overall review of a completed interview."""
+    question_answer = "".join(f"Question: {q.question}\nCandidate's Answer: {q.answer}\n\n" for q in questions)
+    data = chat_json(interview_review_prompt(interview), question_answer or "The candidate did not answer any question.")
+    interview.score = to_score(data.get("score"))
+    interview.review = to_text(data.get("review"))
+    interview.strong_points = to_text(data.get("strong_points"))
+    interview.weak_points = to_text(data.get("weak_points"))
+    interview.improvements = to_text(data.get("improvements"))
+    interview.is_selected = bool(data.get("is_selected"))
+    interview.reason_selection = to_text(data.get("reason_selection"))
+    interview.save()
+
+
+def generate_answer_review(interview, questions):
+    """Review each answer separately; a failed answer review does not stop the others."""
+    prompt = answer_review_prompt(interview)
+    for question in questions:
+        try:
+            data = chat_json(prompt, f"Question: {question.question}\nCandidate's Answer: {question.answer}",
+                             model=settings.AI_FAST_MODEL)
+        except Exception as e:
+            print(f"[ERROR] Error generating answer review for question id {question.id}: {e}")
+            continue
+        question.score = to_score(data.get("score"))
+        question.review = to_text(data.get("review"))
+        question.improvements = to_text(data.get("improvements"))
+        question.perfect_answer = to_text(data.get("perfect_answer"))
+        question.save()
