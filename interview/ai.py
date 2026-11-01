@@ -205,3 +205,52 @@ def generate_answer_review(interview, questions):
         question.improvements = to_text(data.get("improvements"))
         question.perfect_answer = to_text(data.get("perfect_answer"))
         question.save()
+
+
+def cross_question_prompt(interview, number_of_cross_questions, importance_score):
+    template = interviewer_intro(interview)
+    if interview.job_description:
+        template += f"\n\nThe job description is: {interview.job_description}.\n\n"
+
+    template += f"Your primary task is to generate high-quality follow-up questions based on\
+ the candidate's responses to questions. However, you should do so selectively. So, generate follow-up\
+ questions when one or more of the following conditions are met for the candidate's answer:\
+\n1. When the candidate's response to the question is unclear or vague.\
+\n2. When the candidate's initial answer is too brief, incomplete or lacks details.\
+\n3. When you need to probe deeper into the candidate's past behavior and actions in specific situations.\
+\n4. When you need to assess the candidate's technical or domain-specific knowledge thoroughly.\
+\n5. When you want to explore the candidate's behavior, decision-making processes, problem-solving\
+ abilities, and interpersonal skills.\
+\n6. When you want to understand how the candidate would approach and resolve hypothetical scenarios.\
+\n7. When you want to assess the candidate's ability to adapt to changing circumstances and handle\
+ unexpected challenges.\
+\n\nAvoid generating follow-up questions when the candidate explicitly states a lack of knowledge on\
+ a particular concept and also avoid generating questions when the candidate's response is comprehensive,\
+ detailed, and effectively addresses the question, indicating good knowledge on the topic/concept.\
+\nFirstly, generate a score measuring the importance of the follow-up\
+ question needed in this scenario ranging from 1 to 10. Generate follow-up questions only if the\
+ importance score is greater than {importance_score}. If the importance score is lesser than\
+ or equal to {importance_score}, do not generate any question.\n\nNow, given a candidate's response\
+ to a question or a set of questions in the sequence they were asked, generate\
+ follow-up questions, only if much needed, based on the candidate's response. Ensure that the\
+ follow-up questions are concise and directly related to the candidate's last answer.\
+ You can generate at most {number_of_cross_questions} question(s), and zero is a valid choice."
+
+    template += '\n\nRespond only with a JSON object of the form {"importance_score": 1-10, "questions": ["follow-up question", ...]}.'
+    return template
+
+
+def generate_cross_questions(interview, conversation, number_of_cross_questions, importance_score):
+    """Return follow-up questions for the latest answer, or an empty list if none are needed."""
+    question_answer = "".join(f"Question: {q.question}\nCandidate's Answer: {q.answer}\n\n" for q in conversation)
+    try:
+        data = chat_json(cross_question_prompt(interview, number_of_cross_questions, importance_score),
+                         question_answer, model=settings.AI_FAST_MODEL)
+    except Exception as e:
+        print(f"[ERROR] Error generating cross questions: {e}")
+        return []
+
+    if to_score(data.get("importance_score")) <= importance_score:
+        return []
+    questions = [q.strip() for q in data.get("questions", []) if isinstance(q, str) and q.strip()]
+    return questions[:number_of_cross_questions]

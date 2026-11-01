@@ -1,4 +1,6 @@
+import math
 from datetime import timedelta
+from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
@@ -14,6 +16,14 @@ NUMBER_OF_QUESTIONS = {
     timedelta(minutes=60): 20,
     timedelta(minutes=90): 25,
     timedelta(minutes=120): 30,
+}
+
+# Per duration: (max follow-ups per answer, max follow-up depth, importance score a follow-up must beat)
+CROSS_QUESTIONING = {
+    timedelta(minutes=30): (1, 2, 8),
+    timedelta(minutes=60): (2, 2, 9),
+    timedelta(minutes=90): (2, 2, 8),
+    timedelta(minutes=120): (2, 3, 7),
 }
 
 
@@ -134,7 +144,33 @@ def save_answer(request):
         question.answer = answer_text
         question.is_asked = True
         question.save()
+        if interview.cross_question:
+            add_cross_questions(interview, question)
     return JsonResponse({'success': True})
+
+
+def add_cross_questions(interview, question):
+    """Ask the AI for follow-ups to an answer and queue them right after it.
+
+    Positions encode the nesting: follow-ups to question 3 get 3.1, 3.2, and a follow-up
+    to 3.1 gets 3.11, so ordering by position keeps each thread together.
+    """
+    number_of_cross_questions, max_depth, importance_score = CROSS_QUESTIONING[interview.duration]
+    pos = Decimal(str(question.pos)).normalize()
+    depth = max(-pos.as_tuple().exponent, 0) + 1
+    if depth > max_depth:
+        return
+
+    # The conversation so far for this main question, including earlier follow-ups
+    main_pos = math.floor(question.pos)
+    conversation = interview.userquestionanswer_set.filter(
+        is_asked=True, pos__gte=main_pos, pos__lt=main_pos + 1).order_by('pos')
+    cross_questions = ai.generate_cross_questions(interview, conversation, number_of_cross_questions, importance_score)
+
+    step = Decimal(1).scaleb(-depth)
+    for i, cross_question in enumerate(cross_questions, start=1):
+        models.UserQuestionAnswer.objects.create(question=cross_question, user=interview.user,
+                                                 session=interview, pos=float(pos + step * i))
 
 
 def result_url(interview):
