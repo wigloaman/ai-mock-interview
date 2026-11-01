@@ -52,8 +52,12 @@ document.addEventListener('DOMContentLoaded', function () {
               // Redirect or do something upon successful submission
               window.location.href = "/start-interview/";
             } else {
-              // Handle errors if needed
-              alert("Error: " + response.errors);
+              // Show each field's validation messages, e.g. "Job role: This field is required."
+              var messages = Object.keys(response.errors).map(function (field) {
+                var label = field.replace(/_/g, " ");
+                return label.charAt(0).toUpperCase() + label.slice(1) + ": " + response.errors[field].join(" ");
+              });
+              alert("Please fix the following:\n\n" + messages.join("\n"));
               document.getElementById("loadingOverlay").style.display = "none";
             }
           } else {

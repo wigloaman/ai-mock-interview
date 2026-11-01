@@ -81,7 +81,7 @@ class UserInterview(models.Model):
                                                   validators=[MinValueValidator(1),
                                                               MaxValueValidator(10)],
                                                   null=True, blank=True)
-    job_description = models.TextField(max_length=2048, null=True, blank=True)
+    job_description = models.TextField(max_length=5000, null=True, blank=True)
     subject = models.CharField(max_length=128, null=True, blank=True,
                                help_text="Put a comma after each subject")
     topic = models.CharField(max_length=128, null=True, blank=True,

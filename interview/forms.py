@@ -19,10 +19,19 @@ class SignupForm(forms.Form):
         user.save()
 
 
+class NormalizedNewlineField(forms.CharField):
+    # Browsers submit line breaks as \r\n but count them as one character for maxlength,
+    # so normalize before the length check to accept everything the textarea allowed.
+    def to_python(self, value):
+        value = super().to_python(value)
+        return value.replace('\r\n', '\n') if value else value
+
+
 class UserInterviewForm(forms.ModelForm):
     class Meta:
         model = models.UserInterview
         fields = ('job_role', 'job_description', 'company', 'auto_answer')
+        field_classes = {'job_description': NormalizedNewlineField}
 
     def clean(self):
         cleaned_data = super().clean()
