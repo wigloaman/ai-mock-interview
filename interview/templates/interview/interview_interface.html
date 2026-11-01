@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <link rel="icon" href="{% static 'interview/images/favicon.png' %}">
+        <!-- Mobile Metas -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>Interview | AI Mock Interview</title>
+        <link href="{% static 'interview/css/bootstrap.css' %}" rel="stylesheet">
+        <link href="{% static 'interview/css/main.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="{% static 'interview/js/jquery-3.7.0.min.js' %}"></script>
+        <script src="{% static 'interview/js/bootstrap.js' %}"></script>
+        <script src="{% static 'interview/js/main.js' %}"></script>
+        <script src="{% static 'interview/js/interview.js' %}"></script>
+    </head>
+    <body>
+        {% include 'interview/chatbox.html' %}
+    </body>
+</html>

@@ -51,7 +51,6 @@ $(document).ready(function () {
                 if (data.question) {
                     addMessage(data.question, true);
                     chatBox.scrollTop = chatBox.scrollHeight;
-                    speakText(data.question);
                     sendButton.disabled = false;
                     if (data.auto_answer) {
                         getAutoAnswer();
@@ -284,37 +283,6 @@ $(document).ready(function () {
                 alert("Microphone permission is not granted. Please grant it to start speaking.");
             });
     });
-
-    let currentlyPlayingAudio = null;
-    // AWS text to speech
-    function speakText(text) {
-        if (currentlyPlayingAudio) {
-            currentlyPlayingAudio.pause();
-            currentlyPlayingAudio.currentTime = 0; // Reset the playback to the beginning
-            currentlyPlayingAudio = null;
-        }
-        fetch('/speak_text/?text=' + encodeURIComponent(text))
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error('Error:', data.error);
-                } else {
-                    const audioUrl = 'data:audio/mpeg;base64,' + data.audio_data;
-                    const audio = new Audio(audioUrl);
-                    audio.play();
-                    currentlyPlayingAudio = audio;
-
-                    const personBox = document.querySelector('.person-name');
-                    audio.addEventListener('play', () => {
-                        personBox.classList.add('speaking');
-                    });
-
-                    audio.addEventListener('ended', () => {
-                        personBox.classList.remove('speaking');
-                    });
-                }
-            });
-    }
 
     // Expand textarea on smaller screens
     if (window.matchMedia("(max-width: 768px)").matches) {

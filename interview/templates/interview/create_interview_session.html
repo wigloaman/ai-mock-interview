@@ -1,0 +1,76 @@
+{% extends "interview/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="contact_section layout_padding">
+    <div class="container ">
+        {% if interview %}
+        <div class="interview-page-message">
+            It seems you have an ongoing interview session for {{ interview.job_role }} that you have not completed
+            yet:
+            <a href="{% url 'interview:start_interview' %}">
+                <button type="submit">Resume last interview</button>
+            </a>
+        </div>
+        {% endif %}
+        <div class="heading_container">
+            <h2>
+                Interview Details
+            </h2>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <form id="interviewForm" method="post">
+                    {% csrf_token %}
+                    <div class="custom-field">
+                        <label for="id_job_role" class="field-label">Job Role: <span
+                                style="color: red;">*</span></label>
+                        {{ form.job_role.errors }}
+                        {{ form.job_role }}
+                    </div>
+
+                    <div class="custom-field">
+                        <label for="id_company" class="field-label">Company <span
+                                class="optional-text">(Optional)</span>:</label>
+                        {{ form.company.errors }}
+                        {{ form.company }}
+                    </div>
+
+                    <div class="custom-field">
+                        <label for="id_job_description" class="field-label">Job Description <span
+                                class="optional-text">(Optional)</span>:</label>
+                                {{ form.job_description.errors }}
+                                {{ form.job_description }}
+                    </div>
+
+                    <button type="submit">Start Interview</button>
+                </form>
+            </div>
+            <div class="col-md-6 right-flex">
+                <div class="map-responsive sticky-content">
+                  <img src="{% static 'interview/images/interview.png' %}" alt="Interview image">
+              </div>
+            </div>
+        </div>
+    </div>
+    <div id="loadingOverlay">
+        <div id="loadingMessage">
+            <div>Setting up your interview session. Please wait...</div>
+            <div>Please do not navigate away from this page.</div>
+        </div>
+        <div class="loader"></div>
+    </div>
+</section>
+
+<script>
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload(); // Reload the page if it's navigated back to
+        }
+    };
+</script>
+
+{% endblock %}

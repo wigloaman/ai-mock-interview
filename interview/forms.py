@@ -17,3 +17,33 @@ class SignupForm(forms.Form):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.save()
+
+
+class UserInterviewForm(forms.ModelForm):
+    class Meta:
+        model = models.UserInterview
+        fields = ('job_role', 'job_description', 'company')
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Clean job_role
+        job_role = cleaned_data.get('job_role')
+        if job_role:
+            cleaned_data['job_role'] = self.clean_text(job_role)
+
+        # Clean job_description
+        job_description = cleaned_data.get('job_description')
+        if job_description:
+            cleaned_data['job_description'] = self.clean_text(job_description)
+
+        # Clean company
+        company = cleaned_data.get('company')
+        if company:
+            cleaned_data['company'] = self.clean_text(company)
+
+        return cleaned_data
+
+    def clean_text(self, text):
+        # Remove curly brackets, double quotes, and single quotes
+        return text.replace('{', '').replace('}', '').replace('"', '').replace("'", '')

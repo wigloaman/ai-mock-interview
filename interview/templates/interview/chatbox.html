@@ -1,0 +1,43 @@
+<div class="d-flex chat-interface">
+  <div class="chat-container">
+    <div class="chat-box" id="chat-box">
+    </div>
+    <div class="chat-input-container">
+      <textarea id="message-input" placeholder="Type your answer..." rows="1"></textarea>
+      <i id="voice-input-icon" class="fa fa-microphone-slash" style="font-size:20px;"></i>
+      <div id="mic-message" class="mic-message"></div>
+      <button id="send-button"><span id="sendBtnsmall">Send</span> <i class="fa fa-paper-plane"
+          aria-hidden="true"></i></button>
+      <div class="interview-menu">
+        <button id="menuBtn" style="background-color: transparent; border: none;">
+          <i class="fa fa-ellipsis-v" style="color: white; font-size: 24px;" aria-hidden="true"></i>
+        </button>
+        <div class="interview-menu-expand">
+          <ul>
+            <li><a href="{% url 'interview:end_interview' %}">End Interview</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="interview-right d-none d-lg-block">
+    <div class="person-box">
+      <div class="person-name" style="background-color: rgb(8, 61, 122);">I</div>
+    </div>
+    <div class="person-box" id="candidate-box">
+      <div class="person-name" id="candidate-name">
+        {{ user_initial }}
+        <button class="videobutton" id="enableVideoButton"><i class="fa fa-video-camera"
+            aria-hidden="true"></i></button>
+      </div>
+      <div id="videoContainer">
+        <video id="videoElement" autoplay playsinline></video>
+        <button class="videobutton" id="disableVideoButton"><i class="fa fa-video-camera"
+            aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var csrfToken = "{{ csrf_token }}";
+</script>
