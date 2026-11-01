@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" href="{% static 'interview/images/favicon.png' %}">
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- Site Metas -->
+    <meta name="keywords"
+        content="interview preparation, mock interviews, career success, job interviews, ai interview, interview feedback" />
+    <meta name="description"
+        content="Prepare for your next job interview with our AI-driven mock interview platform. Get personalized feedback, practice real-world scenarios, and elevate your career success." />
+    <title>{% block title %}AI Mock Interview{% endblock %}</title>
+    <link href="{% static 'interview/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'interview/css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'interview/css/responsive.css' %}" rel="stylesheet" />
+    <script src="{% static 'interview/js/jquery-3.7.0.min.js' %}"></script>
+    <script src="{% static 'interview/js/bootstrap.js' %}"></script>
+    <script src="{% static 'interview/js/main.js' %}"></script>
+</head>
+
+<body>
+    <header class="header_section" id="navbar">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg custom_nav-container ">
+                <a class="navbar-brand" href="{% url 'interview:index' %}">
+                    <img src="{% static 'interview/images/logo.png' %}" alt="Logo image">
+                    <span>AI Mock Interview</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="s-1"> </span>
+                    <span class="s-2"> </span>
+                    <span class="s-3"> </span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- Close button -->
+                    <div class="d-flex flex-row-reverse">
+                        <button class="navbar-close-toggler d-lg-none" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Close navigation">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="d-flex ml-auto flex-column flex-lg-row align-items-center">
+                        <ul class="navbar-nav  ">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'interview:index' %}">Home <span
+                                        class="sr-only"></span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Start Interview</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Contact Us</a>
+                            </li>
+                            <li class="nav-item nav-small-visible">
+                                <a class="nav-link" href="#">View Profile</a>
+                            </li>
+                            <li class="nav-item nav-small-visible">
+                                <a class="nav-link" href="#">Feedback</a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center nav-large-visible" id="userMenu">
+                                <img class="user-pic" src="{% static 'interview/images/profile-ic.png' %}"
+                                    alt="User Profile Icon">
+                                <span class="nav-dropdown-symbol"></span>
+                                <div class="sub-menu-wrap" id="subMenu">
+                                    <div class="sub-menu">
+                                        <a href="#" class="sub-menu-link sub-menu-link-first">
+                                            <img src="{% static 'interview/images/profile.png' %}" alt="View Profile">
+                                            <p>View Profile</p>
+                                        </a>
+                                        <a href="#" class="sub-menu-link sub-menu-link-first">
+                                            <img src="{% static 'interview/images/feedback-icon.png' %}" alt="Feedback">
+                                            <p>Feedback</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    {% include "interview/footer.html" %}
+</body>
+
+</html>

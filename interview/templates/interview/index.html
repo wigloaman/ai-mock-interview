@@ -1,0 +1,131 @@
+{% extends "interview/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="hero_area">
+  <section class=" slider_section ">
+    <div class="container">
+      <div class="d-flex homepage-banner">
+        <div class="col-md-6 ">
+          <div class="detail_box">
+            <h1>
+              AI-Powered Mock Interviews for Success <br>
+            </h1>
+            <p>
+              Step into the future of interview preparation with our AI-driven mock interview platform. Practice and
+              refine your skills through realistic simulations tailored to various industries and job roles.
+            </p>
+            <a href="#" class="">
+              Start Interview for Free
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-5 col-md-6 offset-lg-1">
+          <div class="img_content">
+            <div class="img_container">
+              <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <div class="img-box interview-gif">
+                      <img src="{% static 'interview/images/interview.gif' %}" alt="Interview">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end slider section -->
+</div>
+<!-- service section -->
+<section class="service_section layout_padding2">
+  <div class="heading_container">
+    <h1>
+      Prepare, Practice and Succeed
+    </h1>
+  </div>
+
+  <div class="features-section">
+    <div class="color-block1 feature-block-1">
+      <div class="feature-block">
+        <div class="feature_content">
+          <h3>Free Tailored Preparation for Career Success</h3>
+          <p>
+            Get job-ready with our tailored, free AI mock interviews. Practice with questions specific to your target
+            role and company, gaining a competitive edge for real-world professional challenges.
+          </p>
+        </div>
+        <div class="video_container">
+          <img src="{% static 'interview/images/job_tailor.png' %}">
+        </div>
+      </div>
+    </div>
+
+    <div class="color-block1">
+      <div class="feature-block reverse-flex">
+        <div class="video_container">
+          <img src="{% static 'interview/images/real-world.png' %}">
+        </div>
+        <div class="feature_content">
+          <h3>Immersive Real-World Experience</h3>
+          <p>
+            Step into the role of a job candidate with our immersive interview simulations. Our platform mimics real
+            interviews, including in-depth follow-up questions, ensuring you're fully prepared for professional
+            challenges.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="color-block2">
+      <div class="feature-block">
+        <div class="feature_content layout_padding2">
+          <h3>Personalized Feedback for Continuous Growth</h3>
+          <p>
+            Improve your interview skills with personalized feedback that highlights your strengths and areas for
+            improvement. Gain valuable insights into your performance, including specific feedback and actionable
+            suggestions.
+          </p>
+        </div>
+        <div class="video_container">
+          <img src="{% static 'interview/images/personal_feedback.gif' %}">
+        </div>
+      </div>
+    </div>
+
+    <div class="color-block3 layout_padding2">
+      <div class="feature-block">
+        <div class="feature_content">
+          <h3>Enhance Your Answers, Elevate Your Success</h3>
+          <p>
+            Refine your answers with our detailed review system. Each response is carefully evaluated, providing scores,
+            strengths, weaknesses, and expert guidance. Enhance confidence and navigate tough interviews effectively.
+          </p>
+        </div>
+        <div class="video_container">
+          <img src="{% static 'interview/images/answer_review.png' %}">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="container">
+    <div class="cta-content">
+      <h2>Ready to Ace Your Next Interview?</h2>
+      <p>Kickstart your interview preparation absolutely free and unlock the potential of our platform designed to
+        elevate your performance.</p>
+      <div class="cta-buttons">
+        <a href="#" class="btn btn-secondary">Start Interview</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{% endblock %}
