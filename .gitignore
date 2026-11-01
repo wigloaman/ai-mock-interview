@@ -13,7 +13,6 @@ staticfiles/
 
 # Secrets
 .env
-env.sh
 
 # OS / editor
 .DS_Store

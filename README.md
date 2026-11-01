@@ -29,8 +29,7 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-cp env-sample.sh env.sh   # then fill in your values
-source env.sh
+cp .env.example .env   # then fill in your values
 python manage.py migrate
 python manage.py runserver
 ```
