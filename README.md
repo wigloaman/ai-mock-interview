@@ -16,6 +16,7 @@ A Django web app for practising job interviews with an AI interviewer.
 - Python, Django 5.2
 - PostgreSQL (Supabase)
 - Bootstrap, jQuery
+- django-allauth for authentication
 
 ## Getting started
 

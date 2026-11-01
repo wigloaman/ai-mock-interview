@@ -23,6 +23,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'interview',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
 ]
 
 MIDDLEWARE = [
@@ -33,6 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -96,7 +100,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Treat URLs entered without a scheme as https (Django 6.0 default)
 FORMS_URLFIELD_ASSUME_HTTPS = True
 
-# Temporary: use the admin login page until account pages are added
-LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+SITE_ID = 1
+
+# Authentication (django-allauth)
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_SIGNUP_FORM_CLASS = 'interview.forms.SignupForm'
+
+# Print emails (e.g. password reset) to the console during development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -1,0 +1,33 @@
+{% extends "interview/base.html" %}
+
+{% block title %}Login | AI Mock Interview{% endblock %}
+
+{% block content %}
+<div class="center-container layout_padding">
+    <div class="form-container">
+        <h2 class="form-heading">Login</h2>
+        <form method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-label">
+                Email: <span style="color:red">*</span>
+            </div>
+            {{ form.login.errors }}
+            {{ form.login }}
+            <div class="form-label">
+                Password: <span style="color:red">*</span>
+            </div>
+            {{ form.password.errors }}
+            {{ form.password }}
+            <label>
+                {{ form.remember }} Remember me
+            </label>
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+            {% endif %}
+            <button class="btn btn-primary form-label" type="submit">Login</button>
+        </form>
+        <p class="text-center">Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a> instead.</p>
+    </div>
+</div>
+{% endblock %}

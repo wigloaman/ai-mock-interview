@@ -1,0 +1,45 @@
+{% extends "interview/base.html" %}
+
+{% block title %}Sign Up | AI Mock Interview{% endblock %}
+
+{% block content %}
+<div class="center-container layout_padding">
+    <div class="form-container">
+        <h2 class="form-heading">Sign Up</h2>
+        <form method="POST" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-label">
+                First Name: <span style="color:red">*</span>
+            </div>
+            {{ form.first_name.errors }}
+            {{ form.first_name }}
+            <div class="form-label">
+                Last Name: <span style="color:red">*</span>
+            </div>
+            {{ form.last_name.errors }}
+            {{ form.last_name }}
+            <div class="form-label">
+                Email: <span style="color:red">*</span>
+            </div>
+            {{ form.email.errors }}
+            {{ form.email }}
+            <div class="form-label">
+                Password: <span style="color:red">*</span>
+            </div>
+            {{ form.password1.errors }}
+            {{ form.password1 }}
+            <div class="form-label">
+                Confirm your password: <span style="color:red">*</span>
+            </div>
+            {{ form.password2.errors }}
+            {{ form.password2 }}
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+            {% endif %}
+            <button class="btn btn-primary form-label" type="submit">Register</button>
+        </form>
+        <p class="text-center">If you already have an account, <a href="{% url 'account_login' %}">login</a> instead.</p>
+    </div>
+</div>
+{% endblock %}

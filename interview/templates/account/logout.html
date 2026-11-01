@@ -1,0 +1,16 @@
+{% extends "interview/base.html" %}
+
+{% block title %}Logout | AI Mock Interview{% endblock %}
+
+{% block content %}
+<div class="center-container layout_padding">
+    <div class="form-container">
+        <h2 class="form-heading">Logout</h2>
+        <p class="text-center">Are you sure you want to log out?</p>
+        <form method="POST" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button class="btn btn-primary form-label" type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
