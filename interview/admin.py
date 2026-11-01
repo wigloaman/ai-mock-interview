@@ -12,4 +12,20 @@ class UserProfileAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'user__email']
 
 
+class UserInterviewAdmin(admin.ModelAdmin):
+    raw_id_fields = ('user',)
+    list_display = ('user', 'score', 'review', 'is_complete', 'created_at', 'updated_at')
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['user__username', 'user__email']
+
+
+class UserQuestionAnswerAdmin(admin.ModelAdmin):
+    raw_id_fields = ('user', 'session')
+    list_display = ('user', 'question', 'answer', 'created_at', 'updated_at')
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['user__username', 'user__email']
+
+
 admin.site.register(models.UserProfile, UserProfileAdmin)
+admin.site.register(models.UserInterview, UserInterviewAdmin)
+admin.site.register(models.UserQuestionAnswer, UserQuestionAnswerAdmin)

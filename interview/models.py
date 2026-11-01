@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
+from datetime import timedelta
 
 
 class UserProfile(models.Model):
@@ -36,5 +38,87 @@ class UserProfile(models.Model):
     city = models.CharField(max_length=100, blank=True, default='')
     region = models.CharField(max_length=100, blank=True, default='')
     postal_code = models.CharField(max_length=15, blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class UserInterview(models.Model):
+    choices_for_difficulty = (
+        ('easy', 'Easy'),
+        ('medium', 'Medium'),
+        ('hard', 'Hard')
+    )
+
+    choices_for_question_type = (
+        ('all', 'All'),
+        ('coding', 'Coding'),
+        ('theory', 'Theory'),
+        ('behavioural', 'Behavioural'),
+        ('puzzle', 'Puzzle'),
+        ('design', 'Design')
+    )
+
+    choice_for_duration = (
+        (timedelta(minutes=30), '30 minutes'),
+        # (timedelta(minutes=60), '1 hour'),
+        # (timedelta(minutes=90), '1 hour 30 minutes'),
+        # (timedelta(minutes=120), '2 hours')
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    score = models.PositiveIntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
+    review = models.TextField(null=True, blank=True)
+    strong_points = models.TextField(null=True, blank=True)
+    weak_points = models.TextField(null=True, blank=True)
+    improvements = models.TextField(null=True, blank=True)
+    is_selected = models.BooleanField(null=True)
+    reason_selection = models.TextField(null=True, blank=True)
+    company = models.CharField(max_length=128, null=True, blank=True)
+    job_role = models.CharField(max_length=128)
+    interview_round = models.PositiveIntegerField(default=1,
+                                                  validators=[MinValueValidator(1),
+                                                              MaxValueValidator(10)],
+                                                  null=True, blank=True)
+    job_description = models.TextField(max_length=2048, null=True, blank=True)
+    subject = models.CharField(max_length=128, null=True, blank=True,
+                               help_text="Put a comma after each subject")
+    topic = models.CharField(max_length=128, null=True, blank=True,
+                             help_text="Put a comma after each topic")
+    tools = models.CharField(max_length=512, null=True, blank=True,
+                             help_text="Put a comma after each tool")
+    difficulty_level = models.CharField(max_length=6, null=True,
+                                        blank=True, choices=choices_for_difficulty)
+    question_type = models.CharField(max_length=12, null=True, default="all",
+                                     blank=True, choices=choices_for_question_type)
+    user_instructions = models.TextField(null=True, blank=True,)  # To get custom user instructions
+    cross_question = models.BooleanField(default=True)
+    tags = models.CharField(max_length=500, null=True, blank=True,
+                            help_text="Put a comma after each tag")
+    duration = models.DurationField(default=timedelta(minutes=30), choices=choice_for_duration)
+    auto_answer = models.BooleanField(default=False,
+                                      help_text="Automatically answers all questions using AI.")
+    is_complete = models.BooleanField(default=False)
+    review_generated = models.BooleanField(default=False)
+    error_present = models.BooleanField(default=False)
+    error_message = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class UserQuestionAnswer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    session = models.ForeignKey(UserInterview, on_delete=models.CASCADE)
+    pos = models.FloatField(default=0.0)
+    question = models.TextField()
+    answer = models.TextField(null=True, blank=True)
+    perfect_answer = models.TextField(null=True, blank=True)
+    score = models.PositiveIntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
+    is_asked = models.BooleanField(default=False)
+    review = models.TextField(null=True, blank=True)
+    improvements = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
