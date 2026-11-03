@@ -5,3 +5,5 @@ django-allauth==0.58.2
 openai==3.42.0
 edge-tts==7.3.1
 python-dotenv==1.2.4
+gunicorn==23.0.0
+whitenoise==6.9.0

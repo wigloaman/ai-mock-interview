@@ -60,6 +60,19 @@ All settings are read from `.env` (see `.env.example`):
 | `TTS_VOICE` | edge-tts voice for spoken questions | `en-US-AvaNeural` |
 | `STT_MODEL` | Groq speech-to-text model | `whisper-large-v3-turbo` |
 
+## Deploying on Render
+
+Create a **Web Service** from the repository with these settings:
+
+| Setting | Value |
+|---|---|
+| Build Command | `./build.sh` |
+| Start Command | `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120` |
+
+Add `GROQ_API_KEY`, `DATABASE_URL`, `DJANGO_SECRET_KEY` and `DEBUG=False` as environment variables. Render's
+hostname is added to the allowed hosts automatically. A single worker keeps background review generation
+consistent, and the long timeout leaves room for question generation.
+
 ## Credits
 
 Based on the open-source project InterviewStreak.
